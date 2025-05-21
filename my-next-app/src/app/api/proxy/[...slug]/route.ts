@@ -14,7 +14,7 @@ async function handler(req: NextRequest, { params }: { params: { slug: string[] 
   // http-proxy-middleware typically works by directly manipulating Node.js http.IncomingMessage and http.ServerResponse.
   // In Next.js API routes (especially Edge runtime), we work with Request and Response objects.
 
-  return new Promise<NextResponse>((resolve, _reject) => { // reject changed to _reject
+  return new Promise<NextResponse>((resolve) => {
     // We need to convert NextRequest to something http-proxy-middleware can understand,
     // or manually construct the target request.
     // For simplicity, let's try to use the core logic of forwarding.
