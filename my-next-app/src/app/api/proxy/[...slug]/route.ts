@@ -1,47 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createProxyMiddleware } from 'http-proxy-middleware';
 
 // Ensure TARGET_SERVER_URL is set in your environment variables.
 // Fallback to a default for development if not set.
 const TARGET_SERVER_URL = process.env.TARGET_SERVER_URL || 'https://jsonplaceholder.typicode.com';
-
-// Helper function to create and configure the proxy middleware
-// We need to adapt http-proxy-middleware to work with Next.js Edge/Node.js runtimes.
-// Next.js API routes expect a handler that returns a Promise<Response>.
-// http-proxy-middleware is designed for traditional Node.js http servers.
-// We'll create a function that adapts the request and response.
-
-const proxy = createProxyMiddleware({
-  target: TARGET_SERVER_URL,
-  changeOrigin: true, // Recommended to prevent issues with virtual hosts
-  pathRewrite: (path, req) => {
-    // req.url here is the full path including /api/proxy
-    // We want to remove /api/proxy from the path
-    const originalPath = (req as any).nextUrl?.pathname || path; // Access original pathname from NextRequest
-    return originalPath.replace(/^\/api\/proxy/, '');
-  },
-  logLevel: 'debug', // Optional: for more detailed logging
-  onProxyReq: (proxyReq, req, res) => {
-    // You can modify the proxy request here if needed
-    // For example, to add custom headers
-    console.log(`[HPM] Proxying to ${TARGET_SERVER_URL}${proxyReq.path}`);
-  },
-  onProxyRes: (proxyRes, req, res) => {
-    // You can modify the proxy response here if needed
-    console.log(`[HPM] Received response from ${TARGET_SERVER_URL}${req.url}`);
-  },
-  onError: (err, req, res) => {
-    console.error('[HPM] Proxy error:', err);
-    // Ensure a response is sent to the client on error
-    if (typeof res.writeHead === 'function') { // Check if res is a ServerResponse
-        (res as any).writeHead(500, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Proxy error', error: err.message }));
-    } else { // res is likely a NextResponse or similar, handle differently if needed for Edge runtime
-        // For Next.js Edge runtime, direct response manipulation might not be possible here.
-        // The promise-based approach below should handle errors by returning a NextResponse.
-    }
-  },
-});
 
 // Generic handler for all HTTP methods
 async function handler(req: NextRequest, { params }: { params: { slug: string[] } }) {
@@ -53,7 +14,7 @@ async function handler(req: NextRequest, { params }: { params: { slug: string[] 
   // http-proxy-middleware typically works by directly manipulating Node.js http.IncomingMessage and http.ServerResponse.
   // In Next.js API routes (especially Edge runtime), we work with Request and Response objects.
 
-  return new Promise<NextResponse>((resolve, reject) => {
+  return new Promise<NextResponse>((resolve, _reject) => { // reject changed to _reject
     // We need to convert NextRequest to something http-proxy-middleware can understand,
     // or manually construct the target request.
     // For simplicity, let's try to use the core logic of forwarding.
@@ -79,7 +40,7 @@ async function handler(req: NextRequest, { params }: { params: { slug: string[] 
       method: req.method,
       headers: headers,
       body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
-      // @ts-ignore duplex is required for streaming request bodies in some Node.js versions / fetch implementations
+      // @ts-expect-error duplex is required for streaming request bodies in some Node.js versions / fetch implementations
       duplex: 'half', // Important for streaming request bodies (e.g. POST/PUT)
     })
     .then(async (targetRes) => {
@@ -100,9 +61,10 @@ async function handler(req: NextRequest, { params }: { params: { slug: string[] 
         headers: responseHeaders,
       }));
     })
-    .catch((error) => {
+    .catch((error: unknown) => { // Added type unknown for error
       console.error(`Error proxying to ${targetUrl}:`, error);
-      resolve(NextResponse.json({ message: 'Proxy error', error: error.message }, { status: 502 })); // Bad Gateway
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      resolve(NextResponse.json({ message: 'Proxy error', error: errorMessage }, { status: 502 })); // Bad Gateway
     });
   });
 }
