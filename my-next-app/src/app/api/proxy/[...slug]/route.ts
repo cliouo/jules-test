@@ -4,8 +4,14 @@ import { NextRequest, NextResponse } from 'next/server';
 // Fallback to a default for development if not set.
 const TARGET_SERVER_URL = process.env.TARGET_SERVER_URL || 'https://jsonplaceholder.typicode.com';
 
+interface RouteHandlerContext {
+  params: {
+    slug: string[];
+  };
+}
+
 // Generic handler for all HTTP methods
-async function handler(req: NextRequest, { params }: { params: { slug: string[] } }) {
+async function handler(req: NextRequest, { params }: RouteHandlerContext) {
   const { slug } = params;
   const originalUrl = req.nextUrl.clone(); // Clone to modify
   originalUrl.pathname = `/${slug.join('/')}`; // Construct path for target server
@@ -70,13 +76,33 @@ async function handler(req: NextRequest, { params }: { params: { slug: string[] 
 }
 
 // Export handlers for each method
-export const GET = handler;
-export const POST = handler;
-export const PUT = handler;
-export const DELETE = handler;
-export const PATCH = handler;
-export const HEAD = handler;
-export const OPTIONS = handler;
+export async function GET(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
+
+export async function POST(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
+
+export async function PUT(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
+
+export async function DELETE(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
+
+export async function PATCH(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
+
+export async function HEAD(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
+
+export async function OPTIONS(request: NextRequest, context: RouteHandlerContext) {
+  return handler(request, context);
+}
 
 // Note: The original attempt to use `http-proxy-middleware` directly in the Next.js App Router
 // is complex because `http-proxy-middleware` is built for traditional Node.js http servers (req, res, next pattern)
