@@ -76,31 +76,31 @@ async function handler(req: NextRequest, { params }: RouteHandlerContext) {
 }
 
 // Export handlers for each method
-export async function GET(request: NextRequest, context: RouteHandlerContext) {
+export async function GET(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
-export async function POST(request: NextRequest, context: RouteHandlerContext) {
+export async function POST(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
-export async function PUT(request: NextRequest, context: RouteHandlerContext) {
+export async function PUT(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
-export async function DELETE(request: NextRequest, context: RouteHandlerContext) {
+export async function DELETE(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
-export async function PATCH(request: NextRequest, context: RouteHandlerContext) {
+export async function PATCH(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
-export async function HEAD(request: NextRequest, context: RouteHandlerContext) {
+export async function HEAD(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
-export async function OPTIONS(request: NextRequest, context: RouteHandlerContext) {
+export async function OPTIONS(request: NextRequest, context: { params: { slug: string[] } }) {
   return handler(request, context);
 }
 
