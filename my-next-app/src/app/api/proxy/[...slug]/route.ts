@@ -4,14 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 // Fallback to a default for development if not set.
 const TARGET_SERVER_URL = process.env.TARGET_SERVER_URL || 'https://jsonplaceholder.typicode.com';
 
-interface RouteHandlerContext {
-  params: {
-    slug: string[];
-  };
-}
-
 // Generic handler for all HTTP methods
-async function handler(req: NextRequest, { params }: RouteHandlerContext) {
+async function handler(req: NextRequest, params: { slug: string[] }) {
   const { slug } = params;
   const originalUrl = req.nextUrl.clone(); // Clone to modify
   originalUrl.pathname = `/${slug.join('/')}`; // Construct path for target server
@@ -76,32 +70,32 @@ async function handler(req: NextRequest, { params }: RouteHandlerContext) {
 }
 
 // Export handlers for each method
-export async function GET(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function GET(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
-export async function POST(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function POST(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
-export async function PUT(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function PUT(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
-export async function DELETE(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function DELETE(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
-export async function PATCH(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function PATCH(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
-export async function HEAD(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function HEAD(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
-export async function OPTIONS(request: NextRequest, context: { params: { slug: string[] } }) {
-  return handler(request, context);
+export async function OPTIONS(request: NextRequest, { params }: { params: { slug: string[] } }) {
+  return handler(request, params);
 }
 
 // Note: The original attempt to use `http-proxy-middleware` directly in the Next.js App Router
