@@ -4,17 +4,12 @@ import { NextRequest, NextResponse } from 'next/server';
 // Fallback to a default for development if not set.
 const TARGET_SERVER_URL = process.env.TARGET_SERVER_URL || 'https://jsonplaceholder.typicode.com';
 
-interface RouteHandlerContext {
-  params: {
-    slug: string[];
-  };
-}
-
 // Generic handler for all HTTP methods
-async function handler(req: NextRequest, { params }: RouteHandlerContext) {
-  const { slug } = params;
-  const originalUrl = req.nextUrl.clone(); // Clone to modify
-  originalUrl.pathname = `/${slug.join('/')}`; // Construct path for target server
+async function handler(
+  req: NextRequest,
+  { params }: { params: Promise<{ slug: string[] }> }
+) {
+  const { slug } = await params;
   
   // To make http-proxy-middleware work with Next.js, we need to manually handle the request and response.
   // http-proxy-middleware typically works by directly manipulating Node.js http.IncomingMessage and http.ServerResponse.
@@ -76,31 +71,52 @@ async function handler(req: NextRequest, { params }: RouteHandlerContext) {
 }
 
 // Export handlers for each method
-export async function GET(request: NextRequest, context: RouteHandlerContext) {
+export async function GET(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
-export async function POST(request: NextRequest, context: RouteHandlerContext) {
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
-export async function PUT(request: NextRequest, context: RouteHandlerContext) {
+export async function PUT(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
-export async function DELETE(request: NextRequest, context: RouteHandlerContext) {
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
-export async function PATCH(request: NextRequest, context: RouteHandlerContext) {
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
-export async function HEAD(request: NextRequest, context: RouteHandlerContext) {
+export async function HEAD(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
-export async function OPTIONS(request: NextRequest, context: RouteHandlerContext) {
+export async function OPTIONS(
+  request: NextRequest,
+  context: { params: Promise<{ slug: string[] }> }
+) {
   return handler(request, context);
 }
 
