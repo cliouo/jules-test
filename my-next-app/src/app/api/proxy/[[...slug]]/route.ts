@@ -7,9 +7,9 @@ const TARGET_SERVER_URL = process.env.TARGET_SERVER_URL || 'https://jsonplacehol
 // Generic handler for all HTTP methods
 async function handler(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string[] }> }
+  { params }: { params: Promise<{ slug?: string[] }> }
 ) {
-  const { slug } = await params;
+  const { slug = [] } = await params;
   
   // To make http-proxy-middleware work with Next.js, we need to manually handle the request and response.
   // http-proxy-middleware typically works by directly manipulating Node.js http.IncomingMessage and http.ServerResponse.

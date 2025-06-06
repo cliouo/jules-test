@@ -6,7 +6,7 @@ This project is located in the `my-next-app` subdirectory of the repository.
 
 ## Project Overview
 
-The core functionality lies in the API route `src/app/api/proxy/[...slug]/route.ts`. This route captures all requests under `/api/proxy/` and forwards them to the server specified by the `TARGET_SERVER_URL` environment variable.
+The core functionality lies in the API route `src/app/api/proxy/[[...slug]]/route.ts`. This optional catch-all route captures requests under `/api/proxy/` (including the root `/api/proxy` itself) and forwards them to the server specified by the `TARGET_SERVER_URL` environment variable.
 
 ## Local Setup
 
@@ -92,6 +92,12 @@ To make a request to a path like `/some/path/on/target` on your `TARGET_SERVER_U
 
 `https://your-unique-app-name.vercel.app/api/proxy/some/path/on/target`
 
+To forward a request to the **root** of your `TARGET_SERVER_URL`, simply call:
+
+`https://your-unique-app-name.vercel.app/api/proxy`
+
+Any query string you include will also be forwarded.
+
 **Examples:**
 
 Let's assume your `TARGET_SERVER_URL` is set to `https://api.example.com` and your Vercel app URL is `https://my-proxy.vercel.app`.
@@ -104,5 +110,5 @@ Let's assume your `TARGET_SERVER_URL` is set to `https://api.example.com` and yo
     To make a POST request to `https://api.example.com/orders` with a JSON body:
     Make a POST request to `https://my-proxy.vercel.app/api/proxy/orders` with your JSON body. The method, headers (most of them), and body will be forwarded.
 
-The proxy route `src/app/api/proxy/[...slug]/route.ts` is configured to handle common HTTP methods (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS) and forward them appropriately. The part of the path after `/api/proxy/` (the "slug") is appended to your `TARGET_SERVER_URL` to form the final destination URL.
+The proxy route `src/app/api/proxy/[[...slug]]/route.ts` is configured to handle common HTTP methods (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS) and forward them appropriately. The part of the path after `/api/proxy/` (the "slug") — which may be empty — is appended to your `TARGET_SERVER_URL` to form the final destination URL.
 ```
